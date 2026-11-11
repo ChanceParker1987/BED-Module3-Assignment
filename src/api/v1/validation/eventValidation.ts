@@ -17,19 +17,18 @@ export const eventSchemas: Record<string, RequestSchema> = {
         }),
     },
 
-    // PUT /api/v1/items/:id - Update Item
+    // PUT /api/v1/events/:id - Update Event
     update: {
         params: Joi.object({
             id: Joi.string().required(),
         }),
         body: Joi.object({
-            name: Joi.string().optional(),
-            description: Joi.string().optional().messages({
-                "string.empty": "Description cannot be empty",
-            }),
-            price: Joi.number().optional().min(0).messages({
-                "number.min": "Price must greater than 0",
-            }),
+            name: Joi.string().min(3).optional(),
+            date: Joi.date().greater("now").optional(),
+            capacity: Joi.number().integer().min(5).optional(),
+            registartionCount: Joi.number().integer().min(0).optional(),
+            status: Joi.string().valid("active", "cancelled", "completed").optional(),
+            category: Joi.string().valid("conference", "workshop", "meetup", "seminar", "general").optional()
         }),
     },
 };
