@@ -1,7 +1,8 @@
 import {
     QuerySnapshot,
+    QueryDocumentSnapshot,
     DocumentData,
-    DocumentSnapshot,
+    DocumentSnapshot
 } from "firebase-admin/firestore";
 import { Event } from "../models/eventModel";
 import {
@@ -22,7 +23,7 @@ const COLLECTION: string = "events";
 export const getAllEvents = async (): Promise<Event[]> => {
     try {
         const snapshot: QuerySnapshot = await getDocuments(COLLECTION);
-        const events: Event[] = snapshot.docs.map((doc) => {
+        const events: Event[] = snapshot.docs.map((doc: QueryDocumentSnapshot) => {
             const data: DocumentData = doc.data();
             return {
                 ...data,
