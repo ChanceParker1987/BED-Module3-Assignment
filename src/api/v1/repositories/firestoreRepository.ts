@@ -217,13 +217,13 @@ export const deleteDocumentsByFieldValues = async (
 
         if (transaction) {
             snapshot = await transaction.get(query);
-            snapshot.docs.forEach((doc) => {
+            snapshot.docs.forEach((doc: FirebaseFirestore.QueryDocumentSnapshot) => {
                 transaction.delete(doc.ref);
             });
         } else {
             snapshot = await query.get();
             const batch: FirebaseFirestore.WriteBatch = db.batch();
-            snapshot.docs.forEach((doc) => {
+            snapshot.docs.forEach((doc: FirebaseFirestore.QueryDocumentSnapshot) => {
                 batch.delete(doc.ref);
             });
             await batch.commit();
