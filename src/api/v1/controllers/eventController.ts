@@ -18,7 +18,7 @@ export const getAllEvents = async (
     try {
         const events: Event[] = await eventService.getAllEvents();
         res.status(HTTP_STATUS.OK).json(
-            successResponse(events, "Events successfully retrieved")
+            successResponse(events, "Events retrieved")
         );
     } catch (error: unknown) {
         next(error);
@@ -40,9 +40,10 @@ export const getEventById = async (
         const id = req.params.id as string;
         const event = await eventService.getEventById(id);
 
-        res.status(200).json(
-            successResponse(event, "Event retrieved successfully")
-        );
+        res.status(HTTP_STATUS.OK).json({
+            message: "Event retrieved",
+            data: event
+        });
     } catch (error: unknown) {
         if (error instanceof Error && error.message.includes("not found")) {
             res.status(404).json({ error: error.message });
@@ -75,9 +76,10 @@ export const createEvent = async (
             status,
             category
         });
-        res.status(HTTP_STATUS.CREATED).json(
-            successResponse(newEvent, "Event created successfully")
-        );
+        res.status(HTTP_STATUS.CREATED).json({
+            message: "Event created",
+            data: newEvent
+        });
     } catch (error: unknown) {
         next(error);
     }
@@ -99,7 +101,7 @@ export const updateEvent = async (
         const id = req.params.id as string;
 
         // Extract update fields
-        const { name, date, capacity, registrationCount, status,category } = req.body;
+        const { name, date, capacity, registrationCount, status, category } = req.body;
 
         // create the update event object with the fields to be updated
         const updatedEvent: Event = await eventService.updateEvent(id, {
@@ -111,10 +113,16 @@ export const updateEvent = async (
             category
         });
 
-        res.status(HTTP_STATUS.OK).json(
-            successResponse(updatedEvent, "Event updated successfully")
-        );
+        res.status(HTTP_STATUS.OK).json({
+            message: "Event updated",
+            data: updatedEvent
+        });
     } catch (error: unknown) {
+        if (error instanceof Error && error.message.includes("not found")) {
+            res.status(404).json({ error: error.message });
+            return;
+        }
+
         next(error);
     }
 };
@@ -135,7 +143,7 @@ export const deleteEvent = async (
         await eventService.deleteEvent(id);
 
         res.status(200).json({
-            message: "Event deleted successfully"
+            message: "Event deleted"
         });
     } catch (error: unknown) {
         if (error instanceof Error && error.message.includes("not found")) {

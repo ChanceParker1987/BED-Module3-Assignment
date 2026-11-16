@@ -83,8 +83,8 @@ export const getEventById = async (id: string): Promise<Event> => {
         throw new Error(`Event with ID ${id} has no data`);
     }
     const event: Event = {
-        ...data,
         id: doc.id,
+        ...data,
         date: data.date.toDate(),
         createdAt: data.createdAt.toDate(),
         updatedAt: data.updatedAt.toDate(),
@@ -117,20 +117,20 @@ export const updateEvent = async (
         updatedAt: new Date(),
     };
 
-    if (eventData.name !== undefined) 
+    if (eventData.name !== undefined)
         updatedEvent.name = eventData.name;
     if (eventData.date !== undefined)
         updatedEvent.date = eventData.date;
     if (eventData.capacity !== undefined)
         updatedEvent.capacity = eventData.capacity;
-    if (eventData.registrationCount !== undefined) 
+    if (eventData.registrationCount !== undefined)
         updatedEvent.registrationCount = eventData.registrationCount;
-    if (eventData.status !== undefined) 
+    if (eventData.status !== undefined)
         updatedEvent.status = eventData.status;
-    if (eventData.category !== undefined) 
+    if (eventData.category !== undefined)
         updatedEvent.category = eventData.category;
     if (updatedEvent.registrationCount > updatedEvent.capacity) {
-    throw new Error("Registration count cannot exceed event capacity");
+        throw new Error("Registration count cannot exceed event capacity");
     }
 
     await updateDocument<Event>(COLLECTION, id, updatedEvent);
