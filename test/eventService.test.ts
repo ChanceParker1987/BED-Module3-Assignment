@@ -46,4 +46,37 @@ describe("Event Service", () => {
         expect(result.id).toBe(mockDocumentId);
         expect(result.name).toBe(mockEventData.name);
     });
+
+    it("should delete an event successfully", async () => {
+        // Arrange
+        const mockDocumentId: string = "test-event-id";
+        const mockEvent: Event = {
+            id: mockDocumentId,
+            name: "Test Event",
+            date: new Date("2027-12-25T09:00:00.000Z"),
+            capacity: 100,
+            registrationCount: 0,
+            status: "active",
+            category: "conference",
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        }
+        // jest.spyOn creates a mock for a specific method/function on an object, in our example the itemService
+        jest.spyOn(eventService, "getEventById").mockResolvedValue(mockEvent);
+
+        // jest.Mock replaces the auto-mocked version with our specific mocked implementation
+        (firestoreRepository.deleteDocument as jest.Mock).mockResolvedValue(
+            undefined
+        );
+
+        // Act
+        await eventService.deleteEvent(mockDocumentId);
+
+        // Assert
+        expect(eventService.getEventById).toHaveBeenCalledWith(mockDocumentId);
+        expect(firestoreRepository.deleteDocument).toHaveBeenCalledWith(
+            "events",
+            mockDocumentId
+        );
+    });
 });
