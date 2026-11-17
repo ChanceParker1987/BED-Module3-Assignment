@@ -18,9 +18,9 @@
   "keywords": [],
   "type": "commonjs",
   "bugs": {
-    "url": "https://github.com/ChanceParker1987/BED-Module4-Assignment/issues"
+    "url": "https://github.com/ChanceParker1987/BED-Module3-Assignment/issues"
   },
-  "homepage": "https://github.com/ChanceParker1987/BED-Module4-Assignment#readme",
+  "homepage": "https://github.com/ChanceParker1987/BED-Module3-Assignment#readme",
   "dependencies": {
     "express": "^5.3.0",
     "firebase-admin": "^14.5.0",
