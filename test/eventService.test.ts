@@ -126,6 +126,61 @@ describe("Event Service", () => {
         expect(result.date).toEqual(mockDate);
     });
 
+    it("should update an event successfully", async () => {
+        // Arrange
+        const mockDocumentId = "test-event-id";
+        const mockDate = new Date("2027-12-25T09:00:00.000Z");
+        const mockCreatedAt = new Date("2026-11-16T09:00:00.000Z");
+
+        const mockDocument = {
+            id: mockDocumentId,
+            exists: true,
+            data: () => ({
+                name: "Test Event",
+                date: { toDate: () => mockDate },
+                capacity: 100,
+                registrationCount: 0,
+                status: "active",
+                category: "conference",
+                createdAt: { toDate: () => mockCreatedAt },
+                updatedAt: { toDate: () => mockCreatedAt }
+            })
+        };
+
+        (firestoreRepository.getDocumentById as jest.Mock)
+            .mockResolvedValue(mockDocument);
+
+        (firestoreRepository.updateDocument as jest.Mock)
+            .mockResolvedValue(undefined);
+
+        // Act
+        const result: Event = await eventService.updateEvent(
+            mockDocumentId,
+            { capacity: 150 }
+        );
+
+        // Assert
+        expect(firestoreRepository.getDocumentById)
+            .toHaveBeenCalledWith("events", mockDocumentId);
+
+        expect(firestoreRepository.updateDocument).toHaveBeenCalledWith(
+            "events",
+            mockDocumentId,
+            expect.objectContaining({
+                capacity: 150,
+                name: "Test Event",
+                registrationCount: 0,
+                updatedAt: expect.any(Date)
+            })
+        );
+
+        expect(result.capacity).toBe(150);
+        expect(result.name).toBe("Test Event");
+        expect(result.createdAt).toEqual(mockCreatedAt);
+        expect(result.updatedAt.getTime())
+            .toBeGreaterThan(mockCreatedAt.getTime());
+    });
+
     it("should delete an event successfully", async () => {
         // Arrange
         const mockDocumentId: string = "test-event-id";
