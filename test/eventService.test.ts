@@ -10,6 +10,10 @@ describe("Event Service", () => {
         jest.clearAllMocks();
     });
 
+    afterEach(() => {
+        jest.restoreAllMocks();
+    });
+
     it("should create an event successfully", async () => {
         // Arrange
         const mockEventData = {
@@ -45,6 +49,45 @@ describe("Event Service", () => {
         );
         expect(result.id).toBe(mockDocumentId);
         expect(result.name).toBe(mockEventData.name);
+    });
+
+    it("should retrieve all events successfully", async () => {
+        // Arrange
+        const mockDate = new Date("2027-12-25T09:00:00.000Z");
+        const mockCreatedAt = new Date("2026-11-16T09:00:00.000Z");
+
+        const mockSnapshot = {
+            docs: [
+                {
+                    id: "test-event-id",
+                    data: () => ({
+                        name: "Test Event",
+                        date: { toDate: () => mockDate },
+                        capacity: 100,
+                        registrationCount: 0,
+                        status: "active",
+                        category: "conference",
+                        createdAt: { toDate: () => mockCreatedAt },
+                        updatedAt: { toDate: () => mockCreatedAt }
+                    })
+                }
+            ]
+        };
+
+        (firestoreRepository.getDocuments as jest.Mock)
+            .mockResolvedValue(mockSnapshot);
+
+        // Act
+        const result: Event[] = await eventService.getAllEvents();
+
+        // Assert
+        expect(firestoreRepository.getDocuments)
+            .toHaveBeenCalledWith("events");
+
+        expect(result).toHaveLength(1);
+        expect(result[0].id).toBe("test-event-id");
+        expect(result[0].name).toBe("Test Event");
+        expect(result[0].date).toEqual(mockDate);
     });
 
     it("should delete an event successfully", async () => {
