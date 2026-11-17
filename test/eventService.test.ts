@@ -90,6 +90,42 @@ describe("Event Service", () => {
         expect(result[0].date).toEqual(mockDate);
     });
 
+    it("should retrieve an event by ID successfully", async () => {
+        // Arrange
+        const mockDocumentId = "test-event-id";
+        const mockDate = new Date("2027-12-25T09:00:00.000Z");
+        const mockCreatedAt = new Date("2026-11-16T09:00:00.000Z");
+
+        const mockDocument = {
+            id: mockDocumentId,
+            exists: true,
+            data: () => ({
+                name: "Test Event",
+                date: { toDate: () => mockDate },
+                capacity: 100,
+                registrationCount: 0,
+                status: "active",
+                category: "conference",
+                createdAt: { toDate: () => mockCreatedAt },
+                updatedAt: { toDate: () => mockCreatedAt }
+            })
+        };
+
+        (firestoreRepository.getDocumentById as jest.Mock)
+            .mockResolvedValue(mockDocument);
+
+        // Act
+        const result: Event = await eventService.getEventById(mockDocumentId);
+
+        // Assert
+        expect(firestoreRepository.getDocumentById)
+            .toHaveBeenCalledWith("events", mockDocumentId);
+
+        expect(result.id).toBe(mockDocumentId);
+        expect(result.name).toBe("Test Event");
+        expect(result.date).toEqual(mockDate);
+    });
+
     it("should delete an event successfully", async () => {
         // Arrange
         const mockDocumentId: string = "test-event-id";
